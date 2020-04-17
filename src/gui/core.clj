@@ -24,12 +24,14 @@
            (swap! *state assoc :clock (jt/local-date-time)))
 
 (def default-style
-  {:-fx-font [ 32 :sans-serif]})
+  {:-fx-font [ 64 :sans-serif]})
 
-(defn date-pane [clock]
+(defn date-pane
+  "Display the current date "
+  [clock]
   {:fx/type :label
    :style default-style
-   :text (jt/format "MMM dd yyyy" clock)})
+   :text (jt/format "MMMM dd yyyy" clock)})
 
 (defn day-of-week-pane [clock]
   {:fx/type :label
