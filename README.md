@@ -1,20 +1,21 @@
 # gui
 
-FIXME: description
+It's a clock with day of week and how long I've been cooped up at home
+![It's a clock](./doc/screenshot.png "Screenshot")
 
 ## Installation
 
-Download from http://example.com/FIXME.
+Ugh. uh. `lein uberjar` and then run it, or `lein repl` and then run `(startup)` 
 
 ## Usage
 
-FIXME: explanation
+It's a jar, run it.
 
     $ java -jar gui-0.1.0-standalone.jar [args]
 
 ## Options
 
-FIXME: listing of options this app accepts.
+It doesn't have any options.
 
 ## Examples
 
@@ -22,11 +23,7 @@ FIXME: listing of options this app accepts.
 
 ### Bugs
 
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+...Yes.
 
 ## License
 

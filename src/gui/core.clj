@@ -20,7 +20,7 @@
 (def quarantine-start (jt/local-date 2020 03 12)) ; todo: pick this up from configuration
 
 (defn days-in-quarantine []
-  (jt/time-between quaratine-start (jt/local-date) :days))
+  (jt/time-between quarantine-start (jt/local-date) :days))
 
 (defmulti event-handler :event/type)
 
@@ -99,6 +99,7 @@
    :width 800
    :height 480
    :showing true
+;   :style :undecorated
    :scene {:fx/type :scene
            :root {:fx/type :v-box
                   :children [(top-row clock)
@@ -112,10 +113,17 @@
                                     :state state}))
    :opts {:fx.opt/map-event-handler event-handler}))
 
+(def startup
+  "utility method to start things up"
+  ; if you are in the repl, run this manually to create the window
+  []
+  (do
+    (fx/mount-renderer *state renderer)
+    (tt/start!) ; start the tea-time thread pool
+    (tt/every! 1 (bound-fn [] (clock-tick))) ; update the clock every second
+    ))
+
 (defn -main []
   (Platform/setImplicitExit(true))
-  ; if you're in the repl, you have to call these three functions
-  (fx/mount-renderer *state renderer)
-  (tt/start!) ; start the tea-time thread pool
-  (tt/every! 1 (bound-fn [] (clock-tick))) ; update the clock every second
+  (startup)
   (println "Hello, World!"))
