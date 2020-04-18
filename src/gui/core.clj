@@ -2,7 +2,7 @@
   (:require
     [cljfx.api :as fx]
     [java-time :as jt]
-    [tea-time :as tt]
+    [tea-time.core :as tt]
     )
   (:import
     [javafx.application Platform]
@@ -12,11 +12,15 @@
   )
   (:gen-class))
 
-(defn clock-tick [] (swap! *state assoc :clock (jt/local-date-time)))
-
 (def *state
-  (atom {:title "App Title"
+  (atom {:title "Quarantine Clock"
          :clock (jt/local-date-time)}))
+
+(defn clock-tick [] (swap! *state assoc :clock (jt/local-date-time)))
+(def quarantine-start (jt/local-date 2020 03 12)) ; todo: pick this up from configuration
+
+(defn days-in-quarantine []
+  (jt/time-between quaratine-start (jt/local-date) :days))
 
 (defmulti event-handler :event/type)
 
@@ -33,18 +37,31 @@
    :style default-style
    :text (jt/format "MMMM dd yyyy" clock)})
 
-(defn day-of-week-pane [clock]
+(defn day-of-week-pane
+  "Display the current day of week"
+  [clock]
   {:fx/type :label
    :style default-style
    :text (jt/format "EEEE" clock)}
   )
 
-(defn clock-pane [clock]
+(defn clock-pane
+  "Display a clock with AM/PM"
+  [clock]
   {:fx/type :label
    :style default-style
-   :text (jt/format "hh:mm:ss a" clock)})
+   :text (jt/format "hh:mm:ss" clock)})
 
-(defn top-row [clock]
+(defn am-pm-pane
+  "Display if the current time is AM or PM"
+  [clock]
+  {:fx/type :label
+   :style default-style
+   :text (jt/format "a" clock)})
+
+(defn top-row
+  "Configuration for top row of display. This includes the day of week and date"
+  [clock]
   {:fx/type :h-box
    :v-box/vgrow :always
    :fill-height true
@@ -53,15 +70,31 @@
    :children [(day-of-week-pane clock)
               (date-pane clock)]})
 
-(defn bottom-row [clock]
+(defn middle-row
+  "Configuration for middle row of display, how long since we sheltered in place."
+  []
   {:fx/type :h-box
    :v-box/vgrow :always
    :fill-height true
    :style {:-fx-alignment :center}
    :spacing 10
-   :children [(clock-pane clock)]})
+   :children [{:fx/type :label
+               :text (str (days-in-quarantine) " days in quarantine") }]})
 
-(defn root-view [{{:keys [clock]} :state}]
+(defn bottom-row
+  "Configuration for bottom row of display. This includes the clock."
+  [clock]
+  {:fx/type :h-box
+   :v-box/vgrow :always
+   :fill-height true
+   :style {:-fx-alignment :center}
+   :spacing 10
+   :children [(clock-pane clock)
+              (am-pm-pane clock)]})
+
+(defn root-view
+  "This defines the root view"
+  [{{:keys [clock]} :state}]
   {:fx/type :stage
    :width 800
    :height 480
@@ -69,11 +102,9 @@
    :scene {:fx/type :scene
            :root {:fx/type :v-box
                   :children [(top-row clock)
+                             (middle-row)
                              (bottom-row clock)]}}})
 
-;(def renderer
-;  (fx/create-renderer
-;   :middleware (fx/wrap-map-desc assoc :fx/type root-view)))
 (def renderer
   (fx/create-renderer
    :middleware (fx/wrap-map-desc (fn [state]
