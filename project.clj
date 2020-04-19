@@ -15,9 +15,11 @@
                  [clojure.java-time "0.3.2"]
                  [tea-time "1.0.1"]
                  [org.clojure/core.cache "1.0.207"]
+                 [cprop "0.1.16"]
+                 [mount "0.1.16"]
+                 [org.clojure/tools.logging "1.0.0"]
                  ]
   :main ^:skip-aot gui.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
-                       :injections [(javafx.application.Platform/exit)]
-                       }})
+                       :injections [(javafx.application.Platform/exit)]}})

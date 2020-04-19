@@ -1,15 +1,16 @@
 (ns gui.core
   (:require
     [cljfx.api :as fx]
+    [clojure.tools.logging :as log]
+    [gui.config :refer [env]]
     [java-time :as jt]
-    [tea-time.core :as tt]
-    )
+    [mount.core :as mount]
+    [tea-time.core :as tt])
   (:import
     [javafx.application Platform]
     [javafx.scene.input KeyCode KeyEvent]
     [javafx.scene.paint Color]
-    [javafx.scene.canvas Canvas]
-  )
+    [javafx.scene.canvas Canvas])
   (:gen-class))
 
 (def *state
@@ -17,7 +18,7 @@
          :clock (jt/local-date-time)}))
 
 (defn clock-tick [] (swap! *state assoc :clock (jt/local-date-time)))
-(def quarantine-start (jt/local-date 2020 03 12)) ; todo: pick this up from configuration
+(def quarantine-start (:shelter-start-date env))
 
 (defn days-in-quarantine []
   (jt/time-between quarantine-start (jt/local-date) :days))
@@ -99,7 +100,7 @@
    :width 800
    :height 480
    :showing true
-;   :style :undecorated
+;   :style :undecorated ; default is :decorated, :undecorated removes the window chrome
    :scene {:fx/type :scene
            :root {:fx/type :v-box
                   :children [(top-row clock)
@@ -113,17 +114,17 @@
                                     :state state}))
    :opts {:fx.opt/map-event-handler event-handler}))
 
-(def startup
-  "utility method to start things up"
+(defn startup
+  "Utility method to start things up"
   ; if you are in the repl, run this manually to create the window
   []
   (do
     (fx/mount-renderer *state renderer)
     (tt/start!) ; start the tea-time thread pool
-    (tt/every! 1 (bound-fn [] (clock-tick))) ; update the clock every second
-    ))
+    (tt/every! 1 (bound-fn [] (clock-tick))) )); update the clock every second
 
 (defn -main []
   (Platform/setImplicitExit(true))
+  (mount/start #'gui.config/env)
   (startup)
   (println "Hello, World!"))
