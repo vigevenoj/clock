@@ -18,10 +18,9 @@
          :clock (jt/local-date-time)}))
 
 (defn clock-tick [] (swap! *state assoc :clock (jt/local-date-time)))
-(def quarantine-start (:shelter-start-date env))
 
 (defn days-in-quarantine []
-  (jt/time-between quarantine-start (jt/local-date) :days))
+  (jt/time-between (:quarantine-start env) (jt/local-date) :days))
 
 (defmulti event-handler :event/type)
 
@@ -100,7 +99,7 @@
    :width 800
    :height 480
    :showing true
-;   :style :undecorated ; default is :decorated, :undecorated removes the window chrome
+   :style (:decorated env) ; default is :decorated, :undecorated removes the window chrome
    :scene {:fx/type :scene
            :root {:fx/type :v-box
                   :children [(top-row clock)

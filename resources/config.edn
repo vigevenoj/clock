@@ -1,2 +1,3 @@
 ; this has placeholder values
-{:shelter-start-date nil}
+{:quarantine-start nil ; whenever. There's a default value merged into this in code
+ :decorated :decorated} ; default is :decorated, :undecorated removes the window chrome

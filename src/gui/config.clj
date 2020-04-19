@@ -8,7 +8,7 @@
   :start
   (load-config
     :merge
-   [{:shelter-start-date (jt/local-date 2020 03 12)}
+   [{:quarantine-start (jt/local-date 2020 03 12)}
      (args)
     (source/from-system-props)
     (source/from-env)]))
