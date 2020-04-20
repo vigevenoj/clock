@@ -92,6 +92,35 @@
    :children [(clock-pane clock)
               (am-pm-pane clock)]})
 
+(defn semicircle [centerx centery radius inner-radius bgcolor stroke-color]
+  (let [move-to {:fx/type :move-to
+                 :x (+ centerx inner-radius)
+                 :y centery}
+        inner-arc {:fx/type :arc-to
+                   :x (- centerx inner-radius)
+                   :y centery
+                   :radius-x inner-radius
+                   :radius-y inner-radius}
+        move-to-2 {:fx/type :move-to
+                   :x (- centerx inner-radius)
+                   :y centery}
+        hline-to-right-leg {:fx/type :h-line-to
+                            :x (+ centerx radius)}
+        outer-arc {:fx/type :arc-to
+                   :x (- centerx radius)
+                   :y centery
+                   :radius-x radius
+                   :radius-y radius}
+        hline-to-left-leg {:fx/type :h-line-to
+                           :x (- centerx inner-radius)}
+        path {:fx/type   :path
+              :fill      bgcolor
+              :stroke    stroke-color
+              :fill-rule :even-odd
+              :elements [move-to inner-arc move-to-2 hline-to-right-leg outer-arc hline-to-right-leg]}
+        ]
+    path ))
+
 (defn root-view
   "This defines the root view"
   [{{:keys [clock]} :state}]
@@ -102,9 +131,12 @@
    :style (:decorated env) ; default is :decorated, :undecorated removes the window chrome
    :scene {:fx/type :scene
            :root {:fx/type :v-box
-                  :children [(top-row clock)
-                             (middle-row)
-                             (bottom-row clock)]}}})
+                  :children [
+                              (semicircle 120 120 100 50 :lightgreen :transparent)
+;                              (top-row clock)
+;                             (middle-row)
+;                             (bottom-row clock)
+                              ]}}})
 
 (def renderer
   (fx/create-renderer
